@@ -136,12 +136,76 @@ Use the included PowerShell Remediation package for cloud-managed endpoints: [in
 
 ## Hunt query — detecting compromise from CVE-2026-48027
 
-If a host had Nx Console v18.95.0 installed before this policy was deployed, the policy will block future loads but will **not** remove the persistence artifacts (cat.py Python backdoor, kitty LaunchAgent, /var/tmp/.gh_update_state). Use the MDE Advanced Hunting KQL maintained separately to identify already-compromised endpoints for credential rotation and cleanup.
+If a host had Nx Console v18.95.0 installed before this policy was deployed, the policy will block future loads but will **not** remove the persistence artifacts (cat.py Python backdoor, kitty LaunchAgent, /var/tmp/.gh_update_state). Run the following query in **Microsoft Defender XDR → Advanced Hunting** to identify already-compromised endpoints for credential rotation and cleanup.
 
 Key indicators:
 - File: `~/.local/share/kitty/cat.py`, `~/Library/LaunchAgents/com.user.kitty-monitor.plist`, `/var/tmp/.gh_update_state`
 - Process: any command line containing `558b09d7ad0d1660e2a0fb8a06da81a6f42e06d2` or `github:nrwl/nx#558`
 - Network: HTTPS to `api.github.com/search/commits?q=firedalazer`
+
+```kql
+let Lookback = 30d;
+let MaliciousCommit = "558b09d7ad0d1660e2a0fb8a06da81a6f42e06d2";
+let MaliciousRef = "github:nrwl/nx#558";
+let GitHubSearchTerm = "firedalazer";
+let FileHits =
+	DeviceFileEvents
+	| where Timestamp >= ago(Lookback)
+	| extend FolderPathLower = tolower(FolderPath), FileNameLower = tolower(FileName)
+	| where FileNameLower in ("cat.py", "com.user.kitty-monitor.plist", ".gh_update_state")
+		or FolderPathLower contains "/.local/share/kitty/cat.py"
+		or FolderPathLower contains "\\.local\\share\\kitty\\cat.py"
+		or FolderPathLower contains "/library/launchagents/com.user.kitty-monitor.plist"
+		or FolderPathLower contains "\\library\\launchagents\\com.user.kitty-monitor.plist"
+		or FolderPathLower contains "/var/tmp/.gh_update_state"
+		or FolderPathLower contains "\\var\\tmp\\.gh_update_state"
+		or FolderPathLower contains "nrwl.angular-console-18.95.0"
+		or FolderPathLower contains "nx-console-18.95.0"
+	| extend Indicator = case(
+		FolderPathLower contains "cat.py", "cat.py Python backdoor",
+		FolderPathLower contains "kitty-monitor.plist", "kitty LaunchAgent persistence",
+		FolderPathLower contains ".gh_update_state", "GitHub update state artifact",
+		FolderPathLower contains "nrwl.angular-console-18.95.0" or FolderPathLower contains "nx-console-18.95.0", "Nx Console v18.95.0 extension path",
+		"Suspicious file indicator")
+	| project Timestamp, DeviceName, DeviceId, EvidenceType = "File", Indicator, ActionType, Evidence = FolderPath, InitiatingProcessFileName, InitiatingProcessCommandLine;
+let ProcessHits =
+	DeviceProcessEvents
+	| where Timestamp >= ago(Lookback)
+	| extend CommandLineEvidence = strcat(ProcessCommandLine, " ", InitiatingProcessCommandLine)
+	| where CommandLineEvidence contains MaliciousCommit
+		or CommandLineEvidence contains MaliciousRef
+		or CommandLineEvidence contains GitHubSearchTerm
+	| extend Indicator = case(
+		CommandLineEvidence contains MaliciousCommit, "Malicious commit hash in command line",
+		CommandLineEvidence contains MaliciousRef, "Malicious GitHub ref in command line",
+		CommandLineEvidence contains GitHubSearchTerm, "GitHub search term in command line",
+		"Suspicious process indicator")
+	| project Timestamp, DeviceName, DeviceId, EvidenceType = "Process", Indicator, ActionType, Evidence = ProcessCommandLine, InitiatingProcessFileName, InitiatingProcessCommandLine;
+let NetworkHits =
+	DeviceNetworkEvents
+	| where Timestamp >= ago(Lookback)
+	| extend NetworkEvidence = strcat(RemoteUrl, " ", RemoteIP, ":", RemotePort, " ", InitiatingProcessCommandLine)
+	| where NetworkEvidence contains "api.github.com/search/commits"
+		or (RemoteUrl =~ "api.github.com" and InitiatingProcessCommandLine contains GitHubSearchTerm)
+		or NetworkEvidence contains GitHubSearchTerm
+	| extend Indicator = case(
+		NetworkEvidence contains "api.github.com/search/commits", "GitHub commit search URL",
+		NetworkEvidence contains GitHubSearchTerm, "GitHub search term network evidence",
+		"Suspicious network indicator")
+	| project Timestamp, DeviceName, DeviceId, EvidenceType = "Network", Indicator, ActionType, Evidence = NetworkEvidence, InitiatingProcessFileName, InitiatingProcessCommandLine;
+union FileHits, ProcessHits, NetworkHits
+| summarize
+	FirstSeen = min(Timestamp),
+	LastSeen = max(Timestamp),
+	HitCount = count(),
+	Indicators = make_set(Indicator, 20),
+	Evidence = make_set(Evidence, 20),
+	InitiatingProcesses = make_set(InitiatingProcessFileName, 20),
+	InitiatingCommandLines = make_set(InitiatingProcessCommandLine, 20),
+	ActionTypes = make_set(ActionType, 20)
+	by DeviceName, DeviceId, EvidenceType
+| order by LastSeen desc
+```
 
 ## References
 
