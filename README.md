@@ -1,4 +1,4 @@
-# vscode-extension-policy
+# VSCode Extension Policy
 
 Group Policy templates and reference allowlist for centrally managing Visual Studio Code extensions across managed Windows endpoints.
 
