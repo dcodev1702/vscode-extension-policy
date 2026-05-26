@@ -20,6 +20,7 @@ This repo enforces a **deny-by-default extension allowlist** so unapproved publi
 ├── images/
 │   ├── extensions-installed.png
 │   ├── gpo-editor.png
+│   ├── gpo-management-linked-ou.png
 │   └── nx-console-blocked.png
 ├── intune/
 │   ├── Detection.ps1           # Intune Remediation detection script
@@ -69,6 +70,8 @@ Copy-Item -Path ".\admx\vscode.adml" -Destination "$cs\en-US" -Force
 2. Right-click the OU containing your VS Code endpoints → **Create a GPO in this domain, and Link it here**
 3. Name: `VSCode - Allowed Extensions`
 4. Right-click the new GPO → **Edit**
+
+![Group Policy Management showing the VSCode OU linked to the VSCode Allowed Extensions GPO](images/gpo-management-linked-ou.png)
 
 ### 3. Configure the policy
 
