@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policyDefinitionResources xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                           revision="1.0"
+                           schemaVersion="1.0"
+                           xmlns="http://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitions">
+  <displayName>Visual Studio Code Policy Templates</displayName>
+  <description>Minimal Group Policy templates for Visual Studio Code extension control</description>
+  <resources>
+    <stringTable>
+      <string id="SUPPORTED_VSCode_1_96">Visual Studio Code 1.96 or later</string>
+      <string id="VSCode">Visual Studio Code</string>
+      <string id="VSCode_Help">Configure Visual Studio Code policies for managed devices</string>
+      <string id="Extensions">Extensions</string>
+      <string id="Extensions_Help">Configure Visual Studio Code extension policies</string>
+      <string id="AllowedExtensions">Allow installation of specific extensions</string>
+      <string id="AllowedExtensions_Help">Specifies which extensions are allowed to be installed in Visual Studio Code. When this policy is set, any extension NOT on the list is blocked from installation and any already-installed non-allowed extension is disabled with an org-managed banner.
+
+Format: a single-line JSON object mapping publisher (or publisher.extensionId) to true / false / version array.
+
+Examples:
+  "ms-vscode": true           -- allows all extensions from publisher ms-vscode (any version)
+  "GitHub.copilot": true      -- allows a specific extension (any version)
+  "ms-python.python": ["2024.0.0"]  -- pins to a specific version
+  "publisher.bad-ext": false  -- explicitly denies (redundant when allow-list is set)
+
+The default value below is the pre-approved allowlist (Microsoft + GitHub publishers). Edit before deployment if needed.
+
+Requires VS Code 1.96 or later.</string>
+      <string id="UpdateMode">Configure Visual Studio Code update behavior</string>
+      <string id="UpdateMode_Help">Controls how Visual Studio Code itself checks for and applies application updates. Leave this policy "Not Configured" to keep the default behavior (recommended for most environments).
+
+Options:
+  Default  -- automatic background updates (VS Code's out-of-the-box behavior)
+  Start    -- check for updates only on application startup
+  Manual   -- user must explicitly check for updates via the Help menu
+  None     -- updates are disabled entirely (use only if you push updates via another channel)
+
+Note: this policy controls VS Code application updates, not extension updates. Extension auto-update is governed by per-user settings unless overridden separately.
+
+Requires VS Code 1.96 or later.</string>
+      <string id="UpdateMode_Default">Default (automatic background updates)</string>
+      <string id="UpdateMode_Start">Start (check on app startup only)</string>
+      <string id="UpdateMode_Manual">Manual (user-initiated only)</string>
+      <string id="UpdateMode_None">None (updates disabled)</string>
+    </stringTable>
+    <presentationTable>
+      <presentation id="AllowedExtensions">
+        <textBox refId="AllowedExtensions_Value">
+          <label>Allowed extensions (JSON, single line):</label>
+          <defaultValue>{"ms-vscode":true,"ms-vscode.powershell":true,"ms-python.python":true,"ms-python.vscode-pylance":true,"ms-python.debugpy":true,"ms-python.vscode-python-envs":true,"ms-azuretools":true,"ms-dotnettools":true,"ms-toolsai.jupyter":true,"ms-toolsai.jupyter-keymap":true,"ms-toolsai.jupyter-renderers":true,"ms-toolsai.vscode-jupyter-cell-tags":true,"ms-toolsai.vscode-jupyter-slideshow":true,"ms-vscode-remote":true,"ms-kubernetes-tools":true,"ms-vsliveshare":true,"ms-edgedevtools":true,"MS-CEINTL":true,"vscode":true,"GitHub":true}</defaultValue>
+        </textBox>
+      </presentation>
+      <presentation id="UpdateMode">
+        <dropdownList refId="UpdateMode_Value" defaultItem="0">Update mode:</dropdownList>
+      </presentation>
+    </presentationTable>
+  </resources>
+</policyDefinitionResources>

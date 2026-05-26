@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policyDefinitions xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   revision="1.0"
+                   schemaVersion="1.0"
+                   xmlns="http://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitions">
+  <policyNamespaces>
+    <target prefix="vscode" namespace="Microsoft.Policies.VSCode" />
+    <using prefix="windows" namespace="Microsoft.Policies.Windows" />
+  </policyNamespaces>
+
+  <resources minRequiredRevision="1.0" />
+
+  <supportedOn>
+    <definitions>
+      <definition name="SUPPORTED_VSCode_1_96"
+                  displayName="$(string.SUPPORTED_VSCode_1_96)" />
+    </definitions>
+  </supportedOn>
+
+  <categories>
+    <category name="VSCode"
+              displayName="$(string.VSCode)"
+              explainText="$(string.VSCode_Help)" />
+    <category name="Extensions"
+              displayName="$(string.Extensions)"
+              explainText="$(string.Extensions_Help)">
+      <parentCategory ref="VSCode" />
+    </category>
+  </categories>
+
+  <policies>
+    <policy name="AllowedExtensions"
+            class="Machine"
+            displayName="$(string.AllowedExtensions)"
+            explainText="$(string.AllowedExtensions_Help)"
+            key="SOFTWARE\Policies\Microsoft\VSCode"
+            presentation="$(presentation.AllowedExtensions)">
+      <parentCategory ref="Extensions" />
+      <supportedOn ref="SUPPORTED_VSCode_1_96" />
+      <elements>
+        <text id="AllowedExtensions_Value"
+              valueName="AllowedExtensions"
+              required="true"
+              maxLength="32767" />
+      </elements>
+    </policy>
+
+    <policy name="UpdateMode"
+            class="Machine"
+            displayName="$(string.UpdateMode)"
+            explainText="$(string.UpdateMode_Help)"
+            key="SOFTWARE\Policies\Microsoft\VSCode"
+            presentation="$(presentation.UpdateMode)">
+      <parentCategory ref="VSCode" />
+      <supportedOn ref="SUPPORTED_VSCode_1_96" />
+      <elements>
+        <enum id="UpdateMode_Value" valueName="UpdateMode" required="true">
+          <item displayName="$(string.UpdateMode_Default)">
+            <value><string>default</string></value>
+          </item>
+          <item displayName="$(string.UpdateMode_Start)">
+            <value><string>start</string></value>
+          </item>
+          <item displayName="$(string.UpdateMode_Manual)">
+            <value><string>manual</string></value>
+          </item>
+          <item displayName="$(string.UpdateMode_None)">
+            <value><string>none</string></value>
+          </item>
+        </enum>
+      </elements>
+    </policy>
+  </policies>
+</policyDefinitions>
