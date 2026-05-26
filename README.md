@@ -12,17 +12,21 @@ This repo enforces a **deny-by-default extension allowlist** so unapproved publi
 
 ```
 .
+├── CONTRIBUTORS.md
 ├── README.md
-├── vscode_extension_allowlist.json
-│                               # Source of truth for the approved extensions
 ├── admx/
 │   ├── vscode.admx             # Minimal ADMX template (AllowedExtensions + UpdateMode)
 │   └── vscode.adml             # English strings + pre-filled default value
+├── images/
+│   ├── extensions-installed.png
+│   ├── gpo-editor.png
+│   └── nx-console-blocked.png
 ├── intune/
 │   ├── Detection.ps1           # Intune Remediation detection script
 │   ├── Remediation.ps1         # Intune Remediation remediation script
 │   └── instructions.md         # Intune deployment steps
-└── images/                     # Screenshots referenced in this README
+├── vscode_central_store.ps1    # Helper script for copying ADMX/ADML to SYSVOL
+└── vscode_extension_allowlist.json # Source of truth for the approved extensions
 ```
 
 ## How it works
