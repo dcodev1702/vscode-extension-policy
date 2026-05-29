@@ -6,7 +6,6 @@
                    xmlns="http://schemas.microsoft.com/GroupPolicy/2006/07/PolicyDefinitions">
   <policyNamespaces>
     <target prefix="vscode" namespace="Microsoft.Policies.VSCode" />
-    <using prefix="windows" namespace="Microsoft.Policies.Windows" />
   </policyNamespaces>
 
   <resources minRequiredRevision="1.0" />
