@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 870" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+<defs>
+  <linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#2dd4ee"/><stop offset="0.5" stop-color="#a78bfa"/><stop offset="1" stop-color="#f472b6"/>
+  </linearGradient>
+  <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0" stop-color="#2dd4ee"/><stop offset="1" stop-color="#a78bfa"/>
+  </linearGradient>
+</defs>
+<rect x="0" y="0" width="1000" height="870" rx="18" fill="#0a0e16"/>
+<rect x="16" y="16" width="968" height="838" rx="14" fill="#0c111b" stroke="url(#frame)" stroke-width="1.5"/>
+<rect x="18" y="18" width="964" height="2" rx="1" fill="url(#title)" opacity="0.55"/>
+<text x="40" y="40" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="24" font-weight="700" fill="url(#title)">Common Extension IDs</text>
+<text x="960" y="40" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="13" fill="#5b6b7f" text-anchor="end">deny-by-default allowlist</text>
+<text x="40" y="84" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="15" font-weight="700" fill="#8b9bb4" letter-spacing="1.5">NEED</text>
+<text x="272" y="84" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="15" font-weight="700" fill="#8b9bb4" letter-spacing="1.5">EXTENSION ID</text>
+<line x1="40" y1="94" x2="960" y2="94" stroke="#1c2532" stroke-width="1"/>
+<rect x="17" y="107" width="6" height="52" rx="3" fill="#2dd4ee" opacity="0.18"/>
+<rect x="18" y="109" width="3" height="48" rx="1.5" fill="#2dd4ee"/>
+<text x="40" y="139.0" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="18.5" font-weight="650" fill="#2dd4ee">Bicep</text>
+<rect x="272.0" y="118.0" width="254.8" height="30" rx="8" fill="none" stroke="#2dd4ee" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="118.0" width="254.8" height="30" rx="8" fill="#0e1622" stroke="#2dd4ee" stroke-width="1.3"/>
+<text x="399.4" y="138.1" font-size="14.5" fill="#2dd4ee" text-anchor="middle">ms-azuretools.vscode-bicep</text>
+<line x1="40" y1="166.0" x2="960" y2="166.0" stroke="#161f2c" stroke-width="1"/>
+<rect x="18" y="166" width="964" height="106" fill="#ffffff" opacity="0.02"/>
+<rect x="17" y="173" width="6" height="92" rx="3" fill="#a78bfa" opacity="0.18"/>
+<rect x="18" y="175" width="3" height="88" rx="1.5" fill="#a78bfa"/>
+<text x="40" y="225.0" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="18.5" font-weight="650" fill="#a78bfa">C# Dev Kit</text>
+<rect x="272.0" y="184.0" width="210.8" height="30" rx="8" fill="none" stroke="#a78bfa" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="184.0" width="210.8" height="30" rx="8" fill="#0e1622" stroke="#a78bfa" stroke-width="1.3"/>
+<text x="377.4" y="204.1" font-size="14.5" fill="#a78bfa" text-anchor="middle">ms-dotnettools.csharp</text>
+<rect x="494.8" y="184.0" width="228.4" height="30" rx="8" fill="none" stroke="#a78bfa" stroke-width="3.5" opacity="0.16"/>
+<rect x="494.8" y="184.0" width="228.4" height="30" rx="8" fill="#0e1622" stroke="#a78bfa" stroke-width="1.3"/>
+<text x="609.0" y="204.1" font-size="14.5" fill="#a78bfa" text-anchor="middle">ms-dotnettools.csdevkit</text>
+<rect x="272.0" y="224.0" width="342.8" height="30" rx="8" fill="none" stroke="#a78bfa" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="224.0" width="342.8" height="30" rx="8" fill="#0e1622" stroke="#a78bfa" stroke-width="1.3"/>
+<text x="443.4" y="244.1" font-size="14.5" fill="#a78bfa" text-anchor="middle">ms-dotnettools.vscode-dotnet-runtime</text>
+<line x1="40" y1="272.0" x2="960" y2="272.0" stroke="#161f2c" stroke-width="1"/>
+<rect x="17" y="279" width="6" height="52" rx="3" fill="#f472b6" opacity="0.18"/>
+<rect x="18" y="281" width="3" height="48" rx="1.5" fill="#f472b6"/>
+<text x="40" y="311.0" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="18.5" font-weight="650" fill="#f472b6">Remote-SSH</text>
+<rect x="272.0" y="290.0" width="263.6" height="30" rx="8" fill="none" stroke="#f472b6" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="290.0" width="263.6" height="30" rx="8" fill="#0e1622" stroke="#f472b6" stroke-width="1.3"/>
+<text x="403.8" y="310.1" font-size="14.5" fill="#f472b6" text-anchor="middle">ms-vscode-remote.remote-ssh</text>
+<rect x="547.6" y="290.0" width="307.6" height="30" rx="8" fill="none" stroke="#f472b6" stroke-width="3.5" opacity="0.16"/>
+<rect x="547.6" y="290.0" width="307.6" height="30" rx="8" fill="#0e1622" stroke="#f472b6" stroke-width="1.3"/>
+<text x="701.4" y="310.1" font-size="14.5" fill="#f472b6" text-anchor="middle">ms-vscode-remote.remote-ssh-edit</text>
+<line x1="40" y1="338.0" x2="960" y2="338.0" stroke="#161f2c" stroke-width="1"/>
+<rect x="18" y="338" width="964" height="66" fill="#ffffff" opacity="0.02"/>
+<rect x="17" y="345" width="6" height="52" rx="3" fill="#34d399" opacity="0.18"/>
+<rect x="18" y="347" width="3" height="48" rx="1.5" fill="#34d399"/>
+<text x="40" y="377.0" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="18.5" font-weight="650" fill="#34d399">C/C++</text>
+<rect x="272.0" y="356.0" width="184.4" height="30" rx="8" fill="none" stroke="#34d399" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="356.0" width="184.4" height="30" rx="8" fill="#0e1622" stroke="#34d399" stroke-width="1.3"/>
+<text x="364.2" y="376.1" font-size="14.5" fill="#34d399" text-anchor="middle">ms-vscode.cpptools</text>
+<rect x="468.4" y="356.0" width="316.4" height="30" rx="8" fill="none" stroke="#34d399" stroke-width="3.5" opacity="0.16"/>
+<rect x="468.4" y="356.0" width="316.4" height="30" rx="8" fill="#0e1622" stroke="#34d399" stroke-width="1.3"/>
+<text x="626.6" y="376.1" font-size="14.5" fill="#34d399" text-anchor="middle">ms-vscode.cpptools-extension-pack</text>
+<line x1="40" y1="404.0" x2="960" y2="404.0" stroke="#161f2c" stroke-width="1"/>
+<rect x="17" y="411" width="6" height="92" rx="3" fill="#38bdf8" opacity="0.18"/>
+<rect x="18" y="413" width="3" height="88" rx="1.5" fill="#38bdf8"/>
+<text x="40" y="463.0" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="18.5" font-weight="650" fill="#38bdf8">Python</text>
+<rect x="272.0" y="422.0" width="166.8" height="30" rx="8" fill="none" stroke="#38bdf8" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="422.0" width="166.8" height="30" rx="8" fill="#0e1622" stroke="#38bdf8" stroke-width="1.3"/>
+<text x="355.4" y="442.1" font-size="14.5" fill="#38bdf8" text-anchor="middle">ms-python.python</text>
+<rect x="450.8" y="422.0" width="237.2" height="30" rx="8" fill="none" stroke="#38bdf8" stroke-width="3.5" opacity="0.16"/>
+<rect x="450.8" y="422.0" width="237.2" height="30" rx="8" fill="#0e1622" stroke="#38bdf8" stroke-width="1.3"/>
+<text x="569.4" y="442.1" font-size="14.5" fill="#38bdf8" text-anchor="middle">ms-python.vscode-pylance</text>
+<rect x="700.0" y="422.0" width="175.6" height="30" rx="8" fill="none" stroke="#38bdf8" stroke-width="3.5" opacity="0.16"/>
+<rect x="700.0" y="422.0" width="175.6" height="30" rx="8" fill="#0e1622" stroke="#38bdf8" stroke-width="1.3"/>
+<text x="787.8" y="442.1" font-size="14.5" fill="#38bdf8" text-anchor="middle">ms-python.debugpy</text>
+<rect x="272.0" y="462.0" width="272.4" height="30" rx="8" fill="none" stroke="#38bdf8" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="462.0" width="272.4" height="30" rx="8" fill="#0e1622" stroke="#38bdf8" stroke-width="1.3"/>
+<text x="408.2" y="482.1" font-size="14.5" fill="#38bdf8" text-anchor="middle">ms-python.vscode-python-envs</text>
+<line x1="40" y1="510.0" x2="960" y2="510.0" stroke="#161f2c" stroke-width="1"/>
+<rect x="18" y="510" width="964" height="66" fill="#ffffff" opacity="0.02"/>
+<rect x="17" y="517" width="6" height="52" rx="3" fill="#fbbf24" opacity="0.18"/>
+<rect x="18" y="519" width="3" height="48" rx="1.5" fill="#fbbf24"/>
+<text x="40" y="549.0" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="18.5" font-weight="650" fill="#fbbf24">PowerShell</text>
+<rect x="272.0" y="528.0" width="202.0" height="30" rx="8" fill="none" stroke="#fbbf24" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="528.0" width="202.0" height="30" rx="8" fill="#0e1622" stroke="#fbbf24" stroke-width="1.3"/>
+<text x="373.0" y="548.1" font-size="14.5" fill="#fbbf24" text-anchor="middle">ms-vscode.powershell</text>
+<line x1="40" y1="576.0" x2="960" y2="576.0" stroke="#161f2c" stroke-width="1"/>
+<rect x="17" y="583" width="6" height="132" rx="3" fill="#fb7185" opacity="0.18"/>
+<rect x="18" y="585" width="3" height="128" rx="1.5" fill="#fb7185"/>
+<text x="40" y="655.0" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="18.5" font-weight="650" fill="#fb7185">Jupyter Notebook</text>
+<rect x="272.0" y="594.0" width="184.4" height="30" rx="8" fill="none" stroke="#fb7185" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="594.0" width="184.4" height="30" rx="8" fill="#0e1622" stroke="#fb7185" stroke-width="1.3"/>
+<text x="364.2" y="614.1" font-size="14.5" fill="#fb7185" text-anchor="middle">ms-toolsai.jupyter</text>
+<rect x="468.4" y="594.0" width="246.0" height="30" rx="8" fill="none" stroke="#fb7185" stroke-width="3.5" opacity="0.16"/>
+<rect x="468.4" y="594.0" width="246.0" height="30" rx="8" fill="#0e1622" stroke="#fb7185" stroke-width="1.3"/>
+<text x="591.4" y="614.1" font-size="14.5" fill="#fb7185" text-anchor="middle">ms-toolsai.jupyter-keymap</text>
+<rect x="272.0" y="634.0" width="272.4" height="30" rx="8" fill="none" stroke="#fb7185" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="634.0" width="272.4" height="30" rx="8" fill="#0e1622" stroke="#fb7185" stroke-width="1.3"/>
+<text x="408.2" y="654.1" font-size="14.5" fill="#fb7185" text-anchor="middle">ms-toolsai.jupyter-renderers</text>
+<rect x="556.4" y="634.0" width="334.0" height="30" rx="8" fill="none" stroke="#fb7185" stroke-width="3.5" opacity="0.16"/>
+<rect x="556.4" y="634.0" width="334.0" height="30" rx="8" fill="#0e1622" stroke="#fb7185" stroke-width="1.3"/>
+<text x="723.4" y="654.1" font-size="14.5" fill="#fb7185" text-anchor="middle">ms-toolsai.vscode-jupyter-cell-tags</text>
+<rect x="272.0" y="674.0" width="334.0" height="30" rx="8" fill="none" stroke="#fb7185" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="674.0" width="334.0" height="30" rx="8" fill="#0e1622" stroke="#fb7185" stroke-width="1.3"/>
+<text x="439.0" y="694.1" font-size="14.5" fill="#fb7185" text-anchor="middle">ms-toolsai.vscode-jupyter-slideshow</text>
+<line x1="40" y1="722.0" x2="960" y2="722.0" stroke="#161f2c" stroke-width="1"/>
+<rect x="18" y="722" width="964" height="66" fill="#ffffff" opacity="0.02"/>
+<rect x="17" y="729" width="6" height="52" rx="3" fill="#2dd4bf" opacity="0.18"/>
+<rect x="18" y="731" width="3" height="48" rx="1.5" fill="#2dd4bf"/>
+<text x="40" y="761.0" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="18.5" font-weight="650" fill="#2dd4bf">Kubernetes</text>
+<rect x="272.0" y="740.0" width="404.4" height="30" rx="8" fill="none" stroke="#2dd4bf" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="740.0" width="404.4" height="30" rx="8" fill="#0e1622" stroke="#2dd4bf" stroke-width="1.3"/>
+<text x="474.2" y="760.1" font-size="14.5" fill="#2dd4bf" text-anchor="middle">ms-kubernetes-tools.vscode-kubernetes-tools</text>
+<line x1="40" y1="788.0" x2="960" y2="788.0" stroke="#161f2c" stroke-width="1"/>
+<rect x="17" y="795" width="6" height="52" rx="3" fill="#c084fc" opacity="0.18"/>
+<rect x="18" y="797" width="3" height="48" rx="1.5" fill="#c084fc"/>
+<text x="40" y="827.0" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="18.5" font-weight="650" fill="#c084fc">KQL</text>
+<rect x="272.0" y="806.0" width="316.4" height="30" rx="8" fill="none" stroke="#c084fc" stroke-width="3.5" opacity="0.16"/>
+<rect x="272.0" y="806.0" width="316.4" height="30" rx="8" fill="#0e1622" stroke="#c084fc" stroke-width="1.3"/>
+<text x="430.2" y="826.1" font-size="14.5" fill="#c084fc" text-anchor="middle">RoryPreddy.vscode-kusto-formatter</text>
+<text x="600.4" y="826.0" font-family="system-ui,-apple-system,Segoe UI,Roboto,sans-serif" font-size="13.5" font-style="italic" fill="#6b7d93">(third-party, evaluate before adding)</text>
+</svg>
