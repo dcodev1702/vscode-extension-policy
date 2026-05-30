@@ -1,89 +1,91 @@
-# 🔐 VSCode Extension Policy
+# 🔐 VS Code Extension Policy
 
-Group Policy templates and reference allowlist for centrally managing Visual Studio Code extensions across managed Windows endpoints.
+Centrally control which Visual Studio Code extensions are allowed on managed Windows endpoints — deny-by-default — via **Active Directory Group Policy** or **Microsoft Intune**. Ships the ADMX/ADML templates, a reference allowlist, the Intune Remediation scripts, and a Defender hunt query for the incident that motivated it.
 
 ## Why this exists
 
-The May 2026 [Nx Console supply-chain compromise (CVE-2026-48027)](https://github.com/nrwl/nx-console/security/advisories/GHSA-c9j4-9m59-847w) demonstrated that a single poisoned VS Code extension — pushed through auto-update during an 18-minute window — is enough to harvest GitHub PATs, AWS keys, npm tokens, 1Password vaults, and Anthropic / Claude Code configs from a developer machine. The malicious version reached ~6,000 installs before takedown. GitHub itself disclosed that ~3,800 internal repos were exfiltrated from a single employee device running the compromised extension.
+The May 2026 [Nx Console supply-chain compromise (CVE-2026-48027)](https://github.com/nrwl/nx-console/security/advisories/GHSA-c9j4-9m59-847w) showed that a single poisoned VS Code extension — pushed through auto-update in an 18-minute window — can harvest GitHub PATs, AWS keys, npm tokens, 1Password vaults, and Anthropic / Claude Code configs from a developer machine. The malicious version reached ~6,000 installs before takedown, and GitHub disclosed that ~3,800 internal repos were exfiltrated from a single employee device running it.
 
-This repo enforces a **deny-by-default extension allowlist** so unapproved publishers (including future compromised ones) cannot be installed or activated on managed endpoints.
+This repo enforces a **deny-by-default extension allowlist** so unapproved publishers — including future compromised ones — cannot be installed or activated on managed endpoints.
 
 ## Repository structure
 
 ```
 .
-├── CONTRIBUTORS.md
 ├── README.md
+├── CONTRIBUTORS.md
+├── vscode_extension_allowlist.json   # Source of truth: the approved extensions
+├── sync_allowlist.ps1                # Stamps the allowlist into the scripts + ADML (-Check for CI)
+├── vscode_central_store.ps1          # Helper: copy ADMX/ADML to the AD Central Store
 ├── admx/
-│   ├── vscode.admx             # Minimal ADMX template (AllowedExtensions + UpdateMode)
-│   └── vscode.adml             # English strings + pre-filled default value
-├── images/
-│   ├── extensions-installed.png
-│   ├── gpo-editor.png
-│   ├── gpo-management-linked-ou.png
-│   └── nx-console-blocked.png
+│   ├── vscode.admx                   # ADMX template (AllowedExtensions + UpdateMode)
+│   └── vscode.adml                   # Strings + pre-filled default allowlist
 ├── intune/
-│   ├── Detection.ps1           # Intune Remediation detection script
-│   ├── Remediation.ps1         # Intune Remediation remediation script
-│   └── instructions.md         # Intune deployment steps
-├── vscode_central_store.ps1    # Helper script for copying ADMX/ADML to SYSVOL
-└── vscode_extension_allowlist.json # Source of truth for the approved extensions
+│   ├── Detection.ps1                 # Intune Remediation: detection
+│   ├── Remediation.ps1               # Intune Remediation: writes the value as SYSTEM
+│   └── instructions.md               # Intune how-to (two approaches: what fails, what works)
+└── images/                           # Screenshots used in this guide
 ```
 
 ## How it works
 
-VS Code 1.96+ honors the `AllowedExtensions` policy at `HKLM\SOFTWARE\Policies\Microsoft\VSCode\AllowedExtensions`. When set, only extensions on the list can be installed; anything else is blocked from the marketplace UI, and any already-installed non-allowed extension is disabled with an org-managed banner.
+VS Code 1.96+ honors the `AllowedExtensions` policy at `HKLM\SOFTWARE\Policies\Microsoft\VSCode\AllowedExtensions`. When set, only listed extensions can be installed; everything else is blocked in the Marketplace UI, and any already-installed non-allowed extension is disabled with an org-managed banner.
 
-The policy value is a single-line JSON object mapping extension or publisher IDs to `true` / `false` / a version array.
+The value is a **single-line JSON object** mapping publisher or `publisher.extensionId` IDs to `true` / `false` / a version array. The same value can be delivered two ways — on-prem via Group Policy, or in the cloud via Intune (see [Deployment](#deployment)).
 
 ## ⚠️ Critical gotcha: publisher-level entries are unreliable
 
-The VS Code docs suggest publisher-level entries like `"ms-python": true` will allow every extension from that publisher. **In practice, this is broken for any extension that depends on other extensions for activation.** This is tracked upstream in [microsoft/vscode#243536](https://github.com/microsoft/vscode/issues/243536) and [#238751](https://github.com/microsoft/vscode/issues/238751).
+The VS Code docs suggest publisher-level entries like `"ms-python": true` allow every extension from that publisher. **In practice this breaks for any extension that depends on others to activate** (tracked in [microsoft/vscode#243536](https://github.com/microsoft/vscode/issues/243536) and [#238751](https://github.com/microsoft/vscode/issues/238751)).
 
-Confirmed broken with publisher-level allow:
-- `ms-python` — Python extension installs but Pylance and Debugpy fail to activate
-- `ms-vscode.powershell` — fails to load when only `ms-vscode` is allowed (the PowerShell language host has dependency activation)
+Confirmed broken with a publisher-level allow:
+
+- `ms-python` — Python installs, but Pylance and Debugpy fail to activate
+- `ms-vscode.powershell` — fails to load when only `ms-vscode` is allowed (its language host has dependency activation)
 - `ms-toolsai` — Jupyter notebook rendering breaks
 
-**The fix:** use the full `publisher.extensionId` form for any extension with dependencies. See `vscode_extension_allowlist.json` in this repo for the working set.
+**Fix:** use the full `publisher.extensionId` form for any extension with dependencies — see `vscode_extension_allowlist.json` for the working set. Wildcards (`"ms-python.*"`) are **not** supported; only the literal `"*"` (all extensions) is valid.
 
-Wildcards (`"ms-python.*"`) are **not supported**. Only the literal `"*"` for all-extensions allow/deny is valid.
+## Deployment
 
-## Deployment — on-prem Active Directory GPO
+Pick the channel that matches how your endpoints are managed. Both write the identical registry value.
 
-### 1. Copy templates to the Central Store
+| Channel | Use when | Guide |
+|---|---|---|
+| **Active Directory (GPO)** | On-prem / domain-joined endpoints | [below](#active-directory-group-policy) |
+| **Microsoft Intune** | Cloud-managed (Entra-joined) endpoints | [intune/instructions.md](intune/instructions.md) |
 
-On a Domain Controller (PowerShell, elevated):
+> Author the allowlist once in `vscode_extension_allowlist.json`, then deploy it through either channel. `sync_allowlist.ps1` keeps the GPO templates and the Intune scripts byte-identical (see [Maintenance](#maintenance)).
+
+### Active Directory (Group Policy)
+
+#### 1. Copy templates to the Central Store
+
+On a Domain Controller (elevated PowerShell):
 
 ```powershell
 $cs = "\\$env:USERDNSDOMAIN\SYSVOL\$env:USERDNSDOMAIN\Policies\PolicyDefinitions"
 New-Item -Path $cs -ItemType Directory -Force | Out-Null
 New-Item -Path "$cs\en-US" -ItemType Directory -Force | Out-Null
 
-Copy-Item -Path ".\admx\vscode.admx"       -Destination $cs -Force
+Copy-Item -Path ".\admx\vscode.admx" -Destination $cs -Force
 Copy-Item -Path ".\admx\vscode.adml" -Destination "$cs\en-US" -Force
 ```
 
-### 2. Create and link the GPO
+#### 2. Create and link the GPO
 
-1. Open **Group Policy Management Console** (`gpmc.msc`)
-2. Right-click the OU containing your VS Code endpoints → **Create a GPO in this domain, and Link it here**
-3. Name: `VSCode - Allowed Extensions`
-4. Right-click the new GPO → **Edit**
+1. Open **Group Policy Management Console** (`gpmc.msc`).
+2. Right-click the OU containing your VS Code endpoints → **Create a GPO in this domain, and Link it here**.
+3. Name it `VSCode - Allowed Extensions`, then right-click it → **Edit**.
 
 ![Group Policy Management showing the VSCode OU linked to the VSCode Allowed Extensions GPO](images/gpo-management-linked-ou.png)
 
-### 3. Configure the policy
+#### 3. Configure the policy
 
-Navigate to:
-
-**Computer Configuration → Policies → Administrative Templates → Visual Studio Code → Extensions → Allow installation of specific extensions**
-
-Set to **Enabled**. The textbox is pre-populated with the working allowlist from `vscode_extension_allowlist.json`. Edit only if adding/removing approved extensions.
+Go to **Computer Configuration → Policies → Administrative Templates → Visual Studio Code → Extensions → Allow installation of specific extensions** and set it to **Enabled**. The textbox is pre-populated with the allowlist from `vscode_extension_allowlist.json`; edit only to add or remove approved extensions.
 
 ![GPO editor configuring the AllowedExtensions policy](images/gpo-editor.png)
 
-### 4. Apply and verify on a client
+#### 4. Apply and verify on a client
 
 ```powershell
 gpupdate /target:computer /force
@@ -94,33 +96,46 @@ $v.Length
 $v | ConvertFrom-Json   # Must parse cleanly; if this errors, GPO truncated the value
 ```
 
+### Microsoft Intune
+
+Same allowlist, cloud delivery — but there's a catch worth knowing up front. Intune offers two routes, and **the obvious one does not work**:
+
+- **Imported ADMX profile — fails.** Reusing `vscode.admx` as an Imported Administrative Template imports and assigns cleanly, then **errors on the endpoint**. Windows MDM ADMX ingestion refuses to write `HKLM\SOFTWARE\Policies\Microsoft\VSCode` because that key is not on Microsoft's reserved-key carve-out list, so the value is never set (`Event 850 → 0x80070005`).
+- **Remediation script as SYSTEM — works.** The supported workaround, which Microsoft documents, is to write the value directly with PowerShell. The included [`Detection.ps1`](intune/Detection.ps1) and [`Remediation.ps1`](intune/Remediation.ps1) run as SYSTEM and enforce the allowlist.
+
+The full step-by-step — both routes, screenshots, and the root cause — is in **[intune/instructions.md](intune/instructions.md)**.
+
 ## Verification
 
-### Approved extensions activate normally
+After deploying through either channel and restarting VS Code:
 
-After applying the policy and restarting VS Code, all extensions on the allowlist load and function as expected. Below: ten Microsoft-published extensions (Jupyter suite, PowerShell, Pylance, Python) all installed and active.
+**Approved extensions activate normally.** Below, ten Microsoft-published extensions (Jupyter suite, PowerShell, Pylance, Python) install and run.
 
 ![VS Code Extensions panel showing all approved extensions installed and enabled](images/extensions-installed.png)
 
-### Non-allowed extensions are blocked at the marketplace
-
-Searching for a non-allowlisted extension (e.g., `nx`) shows the marketplace results with `Install` greyed out and a warning indicator. The Nx Console extension — the same one compromised in CVE-2026-48027 — cannot be installed under this policy regardless of version.
+**Non-allowed extensions are blocked.** Searching the Marketplace for a non-allowlisted extension (e.g., `nx`) shows `Install` greyed out — the Nx Console extension compromised in CVE-2026-48027 cannot be installed regardless of version.
 
 ![Marketplace search for "nx" showing Nx Console with Install button blocked](images/nx-console-blocked.png)
 
 ## Maintenance
 
+The allowlist has one source of truth — `vscode_extension_allowlist.json` — but the value is duplicated into the ADML default and both Intune scripts so endpoints never depend on network access at run time. Keep every copy byte-identical with the bundled helper:
+
+```powershell
+.\sync_allowlist.ps1          # stamp the JSON into Detection.ps1, Remediation.ps1, and vscode.adml
+.\sync_allowlist.ps1 -Check   # CI / pre-commit guard: non-zero exit if any copy has drifted
+```
+
 ### Adding a new approved extension
 
-1. Identify the full extension ID: `publisher.extensionId` (visible in the Marketplace URL: `marketplace.visualstudio.com/items?itemName=publisher.extensionId`)
-2. Add it to `vscode_extension_allowlist.json` in this repo, commit
-3. Open the GPO in GPME → edit the policy → paste the updated single-line JSON into the textbox
-4. `gpupdate /force` on a pilot endpoint, restart VS Code, confirm the extension loads
-5. Let GPO propagate to the rest of the fleet (default refresh: 90–120 min, or push immediately with a scheduled task)
+1. Find the full ID `publisher.extensionId` (in the Marketplace URL: `marketplace.visualstudio.com/items?itemName=publisher.extensionId`).
+2. Add it to `vscode_extension_allowlist.json`, run `.\sync_allowlist.ps1`, and commit the changes together.
+3. **GPO:** paste the updated JSON into the policy textbox. **Intune:** re-upload both scripts.
+4. `gpupdate /force` (or trigger an Intune sync) on a pilot endpoint, restart VS Code, confirm the extension loads, then let it propagate (GPO default refresh: 90–120 min).
 
 ### Updating the ADML default
 
-If you want new GPOs created in the future to pre-populate with the latest allowlist, also update the `<defaultValue>` inside `admx/vscode.adml` to match, and re-copy to the Central Store. This does **not** retroactively change already-deployed GPOs (their value lives in `registry.pol`, not in the ADML).
+`sync_allowlist.ps1` also refreshes the `<defaultValue>` in `admx/vscode.adml` so newly created GPOs pre-populate with the latest allowlist. This does **not** retroactively change already-deployed GPOs — their value lives in `registry.pol`, not the ADML.
 
 ### Common extension IDs
 
@@ -130,20 +145,20 @@ If you want new GPOs created in the future to pre-populate with the latest allow
 | C# Dev Kit | `ms-dotnettools.csharp`, `ms-dotnettools.csdevkit`, `ms-dotnettools.vscode-dotnet-runtime` |
 | Remote-SSH | `ms-vscode-remote.remote-ssh`, `ms-vscode-remote.remote-ssh-edit` |
 | C/C++ | `ms-vscode.cpptools`, `ms-vscode.cpptools-extension-pack` |
+| Python | `ms-python.python`, `ms-python.vscode-pylance`, `ms-python.debugpy`, `ms-python.vscode-python-envs` |
+| PowerShell | `ms-vscode.powershell` |
+| Jupyter Notebook | `ms-toolsai.jupyter`, `ms-toolsai.jupyter-keymap`, `ms-toolsai.jupyter-renderers`, `ms-toolsai.vscode-jupyter-cell-tags`, `ms-toolsai.vscode-jupyter-slideshow` |
 | Kubernetes | `ms-kubernetes-tools.vscode-kubernetes-tools` |
 | KQL | `RoryPreddy.vscode-kusto-formatter` (third-party, evaluate before adding) |
 
-## Alternative deployment — Intune
-
-Use the included PowerShell Remediation package for cloud-managed endpoints: [intune/instructions.md](intune/instructions.md).
-
 ## Hunt query — detecting compromise from CVE-2026-48027
 
-If a host had Nx Console v18.95.0 installed before this policy was deployed, the policy will block future loads but will **not** remove the persistence artifacts (cat.py Python backdoor, kitty LaunchAgent, /var/tmp/.gh_update_state). Run the following query in **Microsoft Defender XDR → Advanced Hunting** to identify already-compromised endpoints for credential rotation and cleanup.
+If a host ran Nx Console v18.95.0 before this policy was deployed, the policy blocks future loads but does **not** remove the persistence artifacts (cat.py Python backdoor, kitty LaunchAgent, `/var/tmp/.gh_update_state`). Run this in **Microsoft Defender XDR → Advanced Hunting** to find already-compromised endpoints for credential rotation and cleanup.
 
 Key indicators:
+
 - File: `~/.local/share/kitty/cat.py`, `~/Library/LaunchAgents/com.user.kitty-monitor.plist`, `/var/tmp/.gh_update_state`
-- Process: any command line containing `558b09d7ad0d1660e2a0fb8a06da81a6f42e06d2` or `github:nrwl/nx#558`
+- Process: command line containing `558b09d7ad0d1660e2a0fb8a06da81a6f42e06d2` or `github:nrwl/nx#558`
 - Network: HTTPS to `api.github.com/search/commits?q=firedalazer`
 
 ```kql
@@ -209,11 +224,11 @@ union FileHits, ProcessHits, NetworkHits
 	by DeviceName, DeviceId, EvidenceType
 | order by LastSeen desc
 ```
-
 ## References
 
 - [VS Code: Manage extensions in enterprise environments](https://code.visualstudio.com/docs/enterprise/extensions)
 - [VS Code: Centrally manage settings with policies](https://code.visualstudio.com/docs/enterprise/policies)
+- [Win32 and Desktop Bridge app ADMX policy Ingestion](https://learn.microsoft.com/windows/client-management/win32-and-centennial-app-policy-configuration) — why imported ADMX fails in Intune (the reserved-key list)
 - [Nx Console GHSA-c9j4-9m59-847w](https://github.com/nrwl/nx-console/security/advisories/GHSA-c9j4-9m59-847w) — original advisory
 - [Nx postmortem](https://nx.dev/blog/nx-console-v18-95-0-postmortem)
 - [StepSecurity threat intel writeup](https://www.stepsecurity.io/blog/nx-console-vs-code-extension-compromised)
