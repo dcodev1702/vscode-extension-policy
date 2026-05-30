@@ -139,17 +139,7 @@ The allowlist has one source of truth — `vscode_extension_allowlist.json` — 
 
 ### Common extension IDs
 
-| Need | Extension ID |
-|---|---|
-| Bicep | `ms-azuretools.vscode-bicep` |
-| C# Dev Kit | `ms-dotnettools.csharp`, `ms-dotnettools.csdevkit`, `ms-dotnettools.vscode-dotnet-runtime` |
-| Remote-SSH | `ms-vscode-remote.remote-ssh`, `ms-vscode-remote.remote-ssh-edit` |
-| C/C++ | `ms-vscode.cpptools`, `ms-vscode.cpptools-extension-pack` |
-| Python | `ms-python.python`, `ms-python.vscode-pylance`, `ms-python.debugpy`, `ms-python.vscode-python-envs` |
-| PowerShell | `ms-vscode.powershell` |
-| Jupyter Notebook | `ms-toolsai.jupyter`, `ms-toolsai.jupyter-keymap`, `ms-toolsai.jupyter-renderers`, `ms-toolsai.vscode-jupyter-cell-tags`, `ms-toolsai.vscode-jupyter-slideshow` |
-| Kubernetes | `ms-kubernetes-tools.vscode-kubernetes-tools` |
-| KQL | `RoryPreddy.vscode-kusto-formatter` (third-party, evaluate before adding) |
+![Common Extension IDs — the deny-by-default allowlist, grouped by need](images/common-extension-ids.svg)
 
 ## Hunt query — detecting compromise from CVE-2026-48027
 
