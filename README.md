@@ -1,4 +1,4 @@
-# 🔐 VS Code Extension Policy
+# 🔐 VS Code Extension Enforcement Policy
 
 Centrally control which Visual Studio Code extensions are allowed on managed Windows endpoints — deny-by-default — via **Active Directory Group Policy** or **Microsoft Intune**. Ships the ADMX/ADML templates, a reference allowlist, the Intune Remediation scripts, and a Defender hunt query for the incident that motivated it.
 
